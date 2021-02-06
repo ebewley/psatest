@@ -1,8 +1,8 @@
 {
-  "name": "my-webpack-project",
+  "name": "pastest",
   "private": true,
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "AngularJS project for PSA development labs.",
   "repository": "https://github.com/ebewley/psatest.git",
   "license": "MIT",
   "dependencies": {
@@ -14,9 +14,6 @@
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
-    "@types/angular": "^1.8.0",
-    "@types/jasmine": "^3.6.3",
-    "@types/node": "^14.14.25",
     "@webpack-cli/init": "^1.1.2",
     "angular-mocks": "^1.7.5",
     "babel-loader": "^8.2.2",
@@ -24,7 +21,6 @@
     "copy-webpack-plugin": "^7.0.0",
     "cpx": "^1.5.0",
     "css-loader": "^5.0.1",
-    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^4.5.1",
     "http-server": "^0.11.1",
     "jasmine-core": "^3.3.0",
@@ -33,11 +29,8 @@
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.2",
     "protractor": "^5.4.1",
-    "rimraf": "^3.0.2",
     "style-loader": "^2.0.0",
-    "ts-loader": "^8.0.15",
-    "typescript": "^4.1.3",
-    "webpack": "^5.21.0",
+    "webpack": "^5.19.0",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
   },
@@ -57,6 +50,6 @@
     "preprotractor": "npm run update-webdriver",
     "protractor": "protractor e2e-tests/protractor.conf.js",
     "update-index-async": "node --eval \"var fs=require('fs'),indexFile='app/index-async.html',loaderFile='app/lib/angular-loader/angular-loader.min.js',loaderText=fs.readFileSync(loaderFile,'utf-8').split(/sourceMappingURL=angular-loader.min.js.map/).join('sourceMappingURL=lib/angular-loader/angular-loader.min.js.map'),indexText=fs.readFileSync(indexFile,'utf-8').split(/\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/).join('//@@NG_LOADER_START@@\\n'+loaderText+'    //@@NG_LOADER_END@@');fs.writeFileSync(indexFile,indexText);\"",
-    "build": "rimraf dist && webpack --bail --progress --profile"
+    "build": "webpack"
   }
 }

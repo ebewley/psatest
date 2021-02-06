@@ -1,0 +1,173 @@
+/**
+ * Service collection.
+ */
+let appServices = angular
+  .module("myApp.appServices", [])
+  .config(["$httpProvider", function ($httpProvider) {}]);
+
+//#region *** appStateRedux:  Redux functionality for the app state store. ***
+/**
+ * Provides redux pattern support for the app state store.
+ */
+let appStateRedux = {
+    /**
+     * Defines the type names of the app state actions.
+     */
+    actionTypes: {
+        getCurrentUser: 'appState.getCurrentUser',
+        getUsers: 'appState.getUsers',
+        setCurrentUser: 'appState.setCurrentUser'
+    },
+
+    /**
+     * Defines the app state actions.
+     */
+    actions: {
+
+        /**
+         * Returns an action for returning the current user.
+         */
+        getCurrentUser: () => {
+            return {
+                type: appStateRedux.actionTypes.getCurrentUser
+            };
+        },
+
+        /**
+         * Returns an action for returning any number of matching users.
+         */
+        getUsers: (filters = {}) => {
+            return {
+                type: appStateRedux.actionTypes.getUsers,
+                payload: filters
+            };
+        },
+
+        /**
+         * Returns an action for setting a new current user.
+         */
+        setCurrentUser: (user = 0) => {
+            return {
+                type: appStateRedux.actionTypes.setCurrentUser,
+                payload: user
+            };
+        }
+    },
+
+    /**
+     * Initial state of the app state store.
+     */
+    initialState: {
+
+        /**
+         * Returns the entity representing the current user.
+         */
+        currentUser: { FirstName: 'Eric', LastName: 'Bewley', UserID: 1 },
+
+        /**
+         * Returns information pertaining to users known by the system.
+         */
+        users: {
+
+            /**
+             * Returns the list of users known by the system.
+             */
+            items: [],
+
+            /**
+             * Returns the last date/time the data service refreshed the list.
+             */
+            lastRefresh: new Date(0)
+        }
+    }
+};
+//#endregion
+
+//#region *** appStoreService:  Provides functionality for top-level state store requests. ***
+// Create and add the appStoreService to the service collection.
+appServices.factory("appStoreService", [
+
+  /**
+   * Service for providing access to the global application state store object.
+   *
+   * @returns {*} App state store service singleton.
+   */
+  function AppStoreService() {
+
+    /**
+     * Reducer for the app state store.
+     * 
+     * @param {Object} state State store object.
+     * @param {Object} action Action to perform.
+     * @returns {Object} The app state store or the specified entity(ies) requested.
+     */
+    function appState(state = appStateRedux.initialState, action)
+    {
+        switch (action.type) {
+    
+            // getCurrentUser:  Check for returning the current user.
+            case appStateRedux.actionTypes.getCurrentUser:
+                return state.currentUser;
+    
+            // getUsers: Check for returning any number of matching users.
+            case appStateRedux.actactionTypesions.getUsers:
+                var matchingUsers = state.users.items;
+                
+                // If no filters were provided, return all users.
+                if (action.payload.length === 0)
+                    return matchingUsers;
+    
+                // Else if a user ID was provided, return the specific user.
+                if (action.payload.hasOwnProperty('UserID'))
+                    return matchingUsers.find(user => user.UserID === action.payload.UserID);
+    
+                // Else if a first name filter was provided, perform a contains search and reduce the list to only the matching entities.
+                if (action.payload.hasOwnProperty('FirstName'))
+                    matchingUsers = matchingUsers.filter(user => user.FirstName.contains(action.payload.FirstName));
+    
+                // Else if a last name filter was provided, perform a contains search and reduce the list to only the matching entities.
+                if (action.payload.hasOwnProperty('LastName'))
+                    matchingUsers = matchingUsers.filter(user => user.LastName.contains(action.payload.LastName));
+    
+                // Return whatever entities remain in the collection.
+                return matchingUsers;
+    
+            // setCurrentUser:  Check for setting the current user.
+            case appStateRedux.actionTypes.setCurrentUser:
+    
+                // If the supplied value is zero, or the specified user is not found,
+                // then clear the currentUser reference, else set it to the specified user.
+                let newUser = action.payload === 0
+                    ? {}
+                    : state.users.find(user => user.UserID === payload);
+    
+                // We never change the outer state object, so we only switch out User entities.
+                state.currentUser = newUser;
+                return state;
+    
+            // Otherwise, just return the current state.
+            default:
+                return state;
+        }
+    };
+    
+    // Create the service object.
+    let service = {
+
+        //#region *** Variables ***
+        state: appStateRedux.initialState,
+        //#endregion
+
+        //#region *** Methods ***
+        getCurrentUser: () => appState(this.state, appStateRedux.actions.getCurrentUser()),
+        getUsers: (filters = {}) => appState(this.state, appStateRedux.actions.getUsers(filters)),
+        setCurrentUser: (user) => appState(this.state, appStateRedux.actions.setCurrentUser(user))
+        //#endregion
+    };
+
+    // Return service object.
+    return service;
+  },
+]);
+//#endregion
+
